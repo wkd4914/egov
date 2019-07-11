@@ -174,7 +174,7 @@ function fnInit(){
 	   multi_selector.addElement( document.getElementById( 'egovComFileUploader' ) ); */
 	   function test(list){
 		   
-		   
+		    
 		   $.ajax({
 			   url : '/mailtestt/office_user_id.do',
 			   type : 'POST', 
