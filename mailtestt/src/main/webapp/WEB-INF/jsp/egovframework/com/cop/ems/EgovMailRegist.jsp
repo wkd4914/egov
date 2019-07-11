@@ -173,6 +173,7 @@ function fnInit(){
 	   var multi_selector = new MultiSelector( document.getElementById( 'egovComFileList' ), maxFileNum );
 	   multi_selector.addElement( document.getElementById( 'egovComFileUploader' ) ); */
 	   function test(list){
+		     
 		   
 		    
 		   $.ajax({
