@@ -7,6 +7,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="validator" uri="http://www.springmodules.org/tags/commons-validator" %>
+<%@ page isErrorPage="true" import="java.io.*" %>
+<%=exception %>
 <%--
  /**
   * @Class Name : EgovMailRegist.jsp
@@ -34,6 +36,12 @@
 <title>MOPAS 발송메일 등록</title>
 <script type="text/javascript" src="<c:url value='/js/egovframework/com/cmm/fms/EgovMultiFile.js'/>"></script>
 <script type="text/javascript" src="<c:url value="/validator.do"/>"></script>
+
+<script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+  
 <validator:javascript formName="sndngMailVO" staticJavascript="false" xhtml="true" cdata="false"/>
 
 <script type="text/javaScript" language="javascript">
@@ -53,7 +61,6 @@ function insertSndngMail(form) {
 			}
 			form.action = "<c:url value='/cop/ems/insertSndngMail.do'/>";
 			form.submit();
-
 		}
 	}
 }
@@ -85,6 +92,7 @@ function fnInit(){
   	  <input type="hidden" name="link" value="${resultInfo.link}" />
   	  <input type="hidden" name="closeYn" value="${closeYn}" />
   	  <input type="hidden" name="fileStreCours" value="" />
+  	  <input type="hidden" name="OfficeUserVo" value="${OfficeUserVO.oid}"/>
 	  <table width="700">
 	    <tr>
 	      <td>
@@ -118,7 +126,7 @@ function fnInit(){
 			    <td width="600">
 			      <table width="600" cellspacing="0" cellpadding="0" border="0" align="center" class="UseTable">
 				    <tr>
-				      <td width="600"><input name="file_1"  id="egovComFileUploader" type="file" multiple="multiple" tabindex="3"title="<spring:message code="sym.log.atchFile" />" <%--onchange="this.select(); document.getElementById('egovComFileUploader').value=document.selection.createRange().text.toString();" --%> /></td>
+				      <td width="600"><input name="file_1"  id="egovComFileUploader" type="file" title="pc검색" multiple="multiple" tabindex="3"title="<spring:message code="sym.log.atchFile" />" <%--onchange="this.select(); document.getElementById('egovComFileUploader').value=document.selection.createRange().text.toString();" --%> /></td>
 				    </tr>
 				    <tr>
 				      <td width="600">
@@ -147,7 +155,6 @@ function fnInit(){
 			    <td><img src="<c:url value='/images/egovframework/com/cmm/btn/bu2_right.gif' />" width="8" height="20" alt=""></td>
 			    <td>&nbsp;&nbsp;</td>
 			    <td><span class="button"><input type="submit" value="등록" onclick="insertSndngMail(document.sndngMailVO); return false;"></span></td>
-
 			  </tr>
 			</table>
 		  </td>
@@ -155,8 +162,7 @@ function fnInit(){
 	  </table>
 	  
 	  <table border="1">
-	  	<tbody id="officeList">
-	  	</tbody>
+	  	<tbody id="officeList"/>
 	  </table>
   </form:form>
   <script type="text/javascript">
@@ -166,17 +172,35 @@ function fnInit(){
 	   }
 	   var multi_selector = new MultiSelector( document.getElementById( 'egovComFileList' ), maxFileNum );
 	   multi_selector.addElement( document.getElementById( 'egovComFileUploader' ) ); */
-	   function test(){
-		   alert('ㅎ2');
+	   function test(list){
+		   
+		   
+		   $.ajax({
+			   url : '/mailtestt/office_user_id.do',
+			   type : 'POST', 
+			   data : JSON.stringify(list),
+			   dataType: "json",
+				contentType:"application/json;charset=UTF-8",
+			   success : function( res ) {
+				   alert('312321')
+				   console.dir(res);
+			   },
+			   error: function(jqXHR, textStatus, errorThrown) {
+
+			alert(123)
+			   }
+		   }); 
 	   }
 	   
 	   document.querySelector('#egovComFileUploader').onchange = function() {
 		   var html = '';
-		  var files = this.files;
+		   var files = this.files;
+		   	var list = new Array() ;	
 			for(var i=0; i < files.length; i++) {
-				html += '<tr><td>' + files[i].name + '</td></tr>';
+				html += '<tr><td>' + files[i].name + '</td></tr>'
+				list[i] = files[i].name.substring(0,5);
 			}
-		   console.log(html)
+			test(list);
 		   document.querySelector('#officeList').innerHTML = html;
 	   }
   </script>

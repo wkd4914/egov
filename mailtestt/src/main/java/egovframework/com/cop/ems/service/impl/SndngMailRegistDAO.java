@@ -1,17 +1,21 @@
 package egovframework.com.cop.ems.service.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import egovframework.com.cmm.service.impl.EgovComAbstractDAO;
-import egovframework.com.cop.ems.service.SndngMailVO;
-
 import org.springframework.stereotype.Repository;
+
+import egovframework.com.cmm.service.impl.EgovComAbstractDAO;
+import egovframework.com.cop.ems.service.OfficeUserVO;
+import egovframework.com.cop.ems.service.SndngMailVO;
 
 /**
  * 발송메일을 등록하는 DAO 클래스
  * @author 공통서비스 개발팀 박지욱
  * @since 2009.03.12
  * @version 1.0
+ * @param <haspMap>
  * @see
  *
  * <pre>
@@ -24,7 +28,7 @@ import org.springframework.stereotype.Repository;
  *  </pre>
  */
 @Repository("sndngMailRegistDAO")
-public class SndngMailRegistDAO extends EgovComAbstractDAO {
+public class SndngMailRegistDAO<haspMap> extends EgovComAbstractDAO {
 
 	/**
 	 * 발송할 메일을 등록한다
@@ -54,5 +58,10 @@ public class SndngMailRegistDAO extends EgovComAbstractDAO {
 	 */
 	public SndngMailVO updateSndngMail(SndngMailVO vo) throws Exception {
 		return (SndngMailVO) insert("sndngMailRegistDAO.updateSndngMail", vo);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<String> selectOffieUser(List<String> list) throws Exception{
+		return (List<String>) list("sndngMailRegistDAO.SelectOfficeUserList", list);
 	}
 }

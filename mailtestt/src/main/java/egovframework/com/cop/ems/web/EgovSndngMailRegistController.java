@@ -2,8 +2,23 @@ package egovframework.com.cop.ems.web;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.servlet.ModelAndView;
 
 import egovframework.com.cmm.LoginVO;
 import egovframework.com.cmm.annotation.IncludedInfo;
@@ -12,17 +27,9 @@ import egovframework.com.cmm.service.EgovFileMngUtil;
 import egovframework.com.cmm.service.FileVO;
 import egovframework.com.cmm.util.EgovUserDetailsHelper;
 import egovframework.com.cop.ems.service.EgovSndngMailRegistService;
+import egovframework.com.cop.ems.service.OfficeUserVO;
 import egovframework.com.cop.ems.service.SndngMailVO;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
+import egovframework.com.cop.ems.service.impl.SndngMailRegistDAO;
 
 /**
  * 발송메일등록, 발송요청XML파일 생성하는 컨트롤러 클래스
@@ -57,6 +64,9 @@ public class EgovSndngMailRegistController {
 	@Resource(name = "EgovFileMngUtil")
 	private EgovFileMngUtil fileUtil;
 
+	@Autowired
+	private SndngMailRegistDAO sndngMailRegistDAO;
+	
 	/** 파일구분자 */
 	static final char FILE_SEPARATOR = File.separatorChar;
 
@@ -69,11 +79,18 @@ public class EgovSndngMailRegistController {
 	@IncludedInfo(name = "메일발송", order = 360, gid = 40)
 	@RequestMapping(value = "/cop/ems/insertSndngMailView.do")
 	public String insertSndngMailView(@ModelAttribute("sndngMailVO") SndngMailVO sndngMailVO, ModelMap model) throws Exception {
-
+		
 		model.addAttribute("resultInfo", sndngMailVO);
 		return "egovframework/com/cop/ems/EgovMailRegist";
 	}
 
+	@RequestMapping(value="/office_user_id.do")
+	public ModelAndView getOfficeUser(@RequestBody List<String > list)throws Exception{
+		ModelAndView m = new ModelAndView("jsonView");
+		m.addObject("123",sndngMailRegistDAO.selectOffieUser(list));
+		System.out.println(sndngMailRegistDAO.selectOffieUser(list));
+		return m;
+	}
 	/**
 	 * 발송메일을 등록한다
 	 * @param multiRequest MultipartHttpServletRequest
@@ -138,5 +155,17 @@ public class EgovSndngMailRegistController {
 	public String backSndngMailRegist(@ModelAttribute("sndngMailVO") SndngMailVO sndngMailVO, ModelMap model) throws Exception {
 
 		return "redirect:/cop/ems/selectSndngMailList.do";
+	}
+	
+	/**
+	 * 사원 정보 조회.
+	 * @param OfficeUserVO OfficeUserVO
+	 * @return String
+	 * @exception Exception
+	 */
+	@RequestMapping(value = "/cop/ems/OfficeUser.do")
+	public String selectOffieUser(@ModelAttribute("OfficeUserVO") OfficeUserVO officeUserVO, ModelMap model) throws Exception {
+		
+		return "egovframework/com/cop/ems/EgovMailRegist";
 	}
 }
