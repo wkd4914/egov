@@ -1,13 +1,11 @@
 package egovframework.com.cop.ems.service.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
 import egovframework.com.cmm.service.impl.EgovComAbstractDAO;
-import egovframework.com.cop.ems.service.OfficeUserVO;
 import egovframework.com.cop.ems.service.SndngMailVO;
 
 /**
@@ -61,7 +59,7 @@ public class SndngMailRegistDAO<haspMap> extends EgovComAbstractDAO {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<String> selectOffieUser(List<String> list) throws Exception{
-		return (List<String>) list("sndngMailRegistDAO.SelectOfficeUserList", list);
+	public List<Map> selectOffieUser(List<String> list) throws Exception{
+		return (List<Map>) list("sndngMailRegistDAO.SelectOfficeUserList", list);
 	}
 }

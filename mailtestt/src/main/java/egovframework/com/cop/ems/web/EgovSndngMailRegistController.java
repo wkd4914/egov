@@ -2,7 +2,6 @@ package egovframework.com.cop.ems.web;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,15 +14,16 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import egovframework.com.cmm.EgovWebUtil;
 import egovframework.com.cmm.LoginVO;
 import egovframework.com.cmm.annotation.IncludedInfo;
 import egovframework.com.cmm.service.EgovFileMngService;
 import egovframework.com.cmm.service.EgovFileMngUtil;
+import egovframework.com.cmm.service.EgovProperties;
 import egovframework.com.cmm.service.FileVO;
 import egovframework.com.cmm.util.EgovUserDetailsHelper;
 import egovframework.com.cop.ems.service.EgovSndngMailRegistService;
@@ -85,10 +85,9 @@ public class EgovSndngMailRegistController {
 	}
 
 	@RequestMapping(value="/office_user_id.do")
-	public ModelAndView getOfficeUser(@RequestBody List<String > list)throws Exception{
+	public ModelAndView getOfficeUser(@RequestBody List<String> list)throws Exception{
 		ModelAndView m = new ModelAndView("jsonView");
-		m.addObject("123",sndngMailRegistDAO.selectOffieUser(list));
-		System.out.println(sndngMailRegistDAO.selectOffieUser(list));
+		m.addObject("list",sndngMailRegistDAO.selectOffieUser(list));
 		return m;
 	}
 	/**
@@ -109,27 +108,46 @@ public class EgovSndngMailRegistController {
 
 		LoginVO user = (LoginVO) EgovUserDetailsHelper.getAuthenticatedUser();
 
-		List<FileVO> _result = new ArrayList<FileVO>();
-		String _atchFileId = "";
-		final Map<String, MultipartFile> files = multiRequest.getFileMap();
-		if (!files.isEmpty()) {
-			_result = fileUtil.parseFileInf(files, "MSG_", 0, "", "");
-			_atchFileId = fileMngService.insertFileInfs(_result); //파일이 생성되고나면 생성된 첨부파일 ID를 리턴한다.
-
+		
+		List<MultipartFile> list = multiRequest.getFiles("file_1");
+		String storePathString = EgovProperties.getProperty("Globals.fileStorePath");
+		
+		for ( MultipartFile file : list ) {
+			SndngMailVO data = new SndngMailVO();
+			data.setSj(sndngMailVO.getSj());
+			data.setEmailCn(sndngMailVO.getEmailCn());
+				
+			data.setDsptchPerson("TEST2");
+			file.transferTo(new File(storePathString + System.currentTimeMillis() + file.getOriginalFilename()));
+			data.setRecptnPerson("TEST1");
+			data.setOrignlFileNm(file.getOriginalFilename());
+			data.setFileStreCours(storePathString + file.getOriginalFilename());
+			data.setAtchFileId(file.getOriginalFilename());
+			boolean result = sndngMailRegistService.insertSndngMail(data);
 		}
+		
+		
+//		List<FileVO> _result = new ArrayList<FileVO>();
+//		String _atchFileId = "";
+//		final Map<String, MultipartFile> files = multiRequest.getFileMap();
+//		if (!files.isEmpty()) {
+//			_result = fileUtil.parseFileInf(files, "MSG_", 0, "", "");
+//			_atchFileId = fileMngService.insertFileInfs(_result); //파일이 생성되고나면 생성된 첨부파일 ID를 리턴한다.
+//
+//		}
+//
+//		String orignlFileList = "";
 
-		String orignlFileList = "";
-
-		for (int i = 0; i < _result.size(); i++) {
-			FileVO fileVO = _result.get(i);
-			orignlFileList = fileVO.getOrignlFileNm();
-		}
-
-		if (sndngMailVO != null) {
-			sndngMailVO.setAtchFileId(_atchFileId);
-			sndngMailVO.setDsptchPerson(user.getId());
-			sndngMailVO.setOrignlFileNm(orignlFileList);
-		}
+//		for (int i = 0; i < _result.size(); i++) {
+//			FileVO fileVO = _result.get(i);
+//			orignlFileList = fileVO.getOrignlFileNm();
+//		}
+//
+//		if (sndngMailVO != null) {
+//			sndngMailVO.setAtchFileId(_atchFileId);
+//			sndngMailVO.setDsptchPerson(user.getId());
+//			sndngMailVO.setOrignlFileNm(orignlFileList);
+//		}
 
 		// 발송메일을 등록한다.
 		boolean result = sndngMailRegistService.insertSndngMail(sndngMailVO);

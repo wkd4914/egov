@@ -8,7 +8,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="validator" uri="http://www.springmodules.org/tags/commons-validator" %>
 <%@ page isErrorPage="true" import="java.io.*" %>
-<%=exception %>
 <%--
  /**
   * @Class Name : EgovMailRegist.jsp
@@ -82,6 +81,13 @@ function fnInit(){
 	document.sndngMailVO.recptnPerson.focus();
 }
 </script>
+
+
+<style>
+	#officeList{
+		text-align: center
+	}
+</style>
 </head>
 <body onLoad="fnInit();">
 
@@ -94,6 +100,20 @@ function fnInit(){
   	  <input type="hidden" name="fileStreCours" value="" />
   	  <input type="hidden" name="OfficeUserVo" value="${OfficeUserVO.oid}"/>
 	  <table width="700">
+	  		<tr>
+		  <td>
+			<table border="0" cellspacing="0" cellpadding="0" align="left">
+			  <tr>
+			    <td><img src="<c:url value='/images/egovframework/com/cmm/btn/bu2_left.gif' />" width="8" height="20" alt="버튼이미지"></td>
+			    <td style="background-image:URL(<c:url value='/images/egovframework/com/cmm/btn/bu2_bg.gif'/>);" class="text_left" nowrap><a href="#noscript" onclick="fnBack(); return false;">뒤로</a>
+			    </td>
+			    <td><img src="<c:url value='/images/egovframework/com/cmm/btn/bu2_right.gif' />" width="8" height="20" alt=""></td>
+			    <td>&nbsp;&nbsp;</td>
+			    <td><span class="button"><input type="submit" value="등록" onclick="insertSndngMail(document.sndngMailVO); return false;"></span></td>
+			  </tr>
+			</table>
+		  </td>
+		</tr>
 	    <tr>
 	      <td>
 			<table width="700" cellpadding="8" class="table-search" border="0">
@@ -107,12 +127,18 @@ function fnInit(){
 		<tr>
 		  <td>
 			<table width="700" border="0" cellpadding="0" cellspacing="1" class="table-register" summary="받는사람, 제목, 파일첨부 및 발신 내용을 입력하여 발송메일을 등록한다.">
-			<CAPTION style="display: none;">발송메일 등록</CAPTION>
+			<CAPTION style="display: none;">발송메일 등록123</CAPTION>
+			<tr>
+			    <th scope="row" width="100" height="23" class="required_text" nowrap ><label for="recptnPerson">보내는사람</label><img src="<c:url value='/images/egovframework/com/cmm/icon/required.gif' />" width="15" height="15" alt="필수입력표시"></th>
+			    <td width="600" nowrap>
+			     	teodrugsafe@drugsafe.or.kr
+			    </td>
+			  </tr>
 			  <tr>
 			    <th scope="row" width="100" height="23" class="required_text" nowrap ><label for="recptnPerson">받는사람</label><img src="<c:url value='/images/egovframework/com/cmm/icon/required.gif' />" width="15" height="15" alt="필수입력표시"></th>
 			    <td width="600" nowrap>
-			      <input name="recptnPerson" id="recptnPerson" type="text" size="74" value="${resultInfo.recptnPerson}"  maxlength="60" style="ime-mode: disabled;" tabindex="1" title="<spring:message code="sym.ems.receiver" />">
-			      <input type="button" value="등록" onclick ="test()"></input>
+			      <input name="recptnPerson" readonly id="recptnPerson" type="text" size="74" value="${resultInfo.recptnPerson}"  maxlength="60" style="ime-mode: disabled;" tabindex="1" title="<spring:message code="sym.ems.receiver" />">
+			      <input type="button" value="등록" onclick ="openFileForm()"></input>
 			    </td>
 			  </tr>
 			  <tr>
@@ -122,47 +148,29 @@ function fnInit(){
 			    </td>
 			  </tr>
 			  <tr>
-			    <th scope="row" width="100" height="23" class="required_text"><label for="egovComFileUploader">파일첨부&nbsp;&nbsp;&nbsp;</label></th>
-			    <td width="600">
-			      <table width="600" cellspacing="0" cellpadding="0" border="0" align="center" class="UseTable">
-				    <tr>
-				      <td width="600"><input name="file_1"  id="egovComFileUploader" type="file" title="pc검색" multiple="multiple" tabindex="3"title="<spring:message code="sym.log.atchFile" />" <%--onchange="this.select(); document.getElementById('egovComFileUploader').value=document.selection.createRange().text.toString();" --%> /></td>
-				    </tr>
-				    <tr>
-				      <td width="600">
-				        <div id="egovComFileList"></div>
-				      </td>
-				    </tr>
-				  </table>
-			    </td>
-			  </tr>
-			  <tr>
 			    <th scope="row" width="100" height="23" class="required_text" ><label for="emailCn">발신 내용&nbsp;&nbsp;&nbsp;</label></th>
 			    <td width="600">
 			      <textarea id="emailCn" name="emailCn" cols="75" rows="25" tabindex="4"title="<spring:message code="sym.ems.content" />"></textarea>
 			    </td>
 			  </tr>
-			</table>
-		  </td>
-		</tr>
-		<tr>
-		  <td>
-			<table border="0" cellspacing="0" cellpadding="0" align="right">
 			  <tr>
-			    <td><img src="<c:url value='/images/egovframework/com/cmm/btn/bu2_left.gif' />" width="8" height="20" alt="버튼이미지"></td>
-			    <td style="background-image:URL(<c:url value='/images/egovframework/com/cmm/btn/bu2_bg.gif'/>);" class="text_left" nowrap><a href="#noscript" onclick="fnBack(); return false;">뒤로</a>
+			    <th scope="row" width="100" height="23" class="required_text"><label for="egovComFileUploader">파일첨부&nbsp;&nbsp;&nbsp;</label></th>
+			    <td width="600">
+			      <table width="600" cellspacing="0" cellpadding="0" border="0" align="center" class="UseTable">
+				    <tr>
+				      <td width="600"><input name="file_1"  id="egovComFileUploader" type="file" value="pc검색" multiple="multiple" tabindex="3"title="<spring:message code="sym.log.atchFile" />" <%--onchange="this.select(); document.getElementById('egovComFileUploader').value=document.selection.createRange().text.toString();" --%> /></td>
+				    	<td width="100"><input type="button" value="삭제" onclick="deleterow()" />
+				    </tr>
+			
+				  </table>
 			    </td>
-			    <td><img src="<c:url value='/images/egovframework/com/cmm/btn/bu2_right.gif' />" width="8" height="20" alt=""></td>
-			    <td>&nbsp;&nbsp;</td>
-			    <td><span class="button"><input type="submit" value="등록" onclick="insertSndngMail(document.sndngMailVO); return false;"></span></td>
 			  </tr>
 			</table>
 		  </td>
 		</tr>
 	  </table>
 	  
-	  <table border="1">
-	  	<tbody id="officeList"/>
+	  <table border="1" id="officeList">
 	  </table>
   </form:form>
   <script type="text/javascript">
@@ -172,10 +180,7 @@ function fnInit(){
 	   }
 	   var multi_selector = new MultiSelector( document.getElementById( 'egovComFileList' ), maxFileNum );
 	   multi_selector.addElement( document.getElementById( 'egovComFileUploader' ) ); */
-	   function test(list){
-		     
-		   
-		    
+	   function test(list, fileNames){
 		   $.ajax({
 			   url : '/mailtestt/office_user_id.do',
 			   type : 'POST', 
@@ -183,27 +188,81 @@ function fnInit(){
 			   dataType: "json",
 				contentType:"application/json;charset=UTF-8",
 			   success : function( res ) {
-				   alert('312321')
-				   console.dir(res);
-			   },
+				   let html = '';
+				   res = res['list'];
+				   
+				   html += '<tr>';
+				   html += '<td> '+'<input type="checkbox" onclick="check_all(this);" />' + '</td>'
+				   html += '<td width="110" >' + '사번' + '</td>';
+				   html += '<td width="110" >' + '이름' + '</td>';
+				   html += '<td width="200" >' + '메일주소' + '</td>';
+				   html += '<td width="200" >' + '파일명' + '</td>';
+				   html += '</tr>';
+				   res.forEach((e, i) => {
+					   html += '<tr>';
+					   html += '<td><input type="checkbox" name="mycheck" data-index=' + i + '></td>';
+					   html += '<td width="110" >' + e['OID'] + '</td>';
+					   html += '<td width="110">' + e['ONAME'] + '</td>';
+					   html += '<td width="200" >' + e['OMAIL'] + '</td>';
+					   html += '<td width="200">' + fileNames[i] + '</td>';
+					   html += '</tr>';
+				   }); 
+				   
+				   document.querySelector('#officeList').innerHTML= html;
+			   }, 
 			   error: function(jqXHR, textStatus, errorThrown) {
-
-			alert(123)
+					console.log(errorThrown);
 			   }
 		   }); 
 	   }
 	   
 	   document.querySelector('#egovComFileUploader').onchange = function() {
-		   var html = '';
-		   var files = this.files;
-		   	var list = new Array() ;	
+		    var html = '';
+		    var files = this.files;
+		   	var list = [];	
+		   	var fileNames = [];
+		   
 			for(var i=0; i < files.length; i++) {
-				html += '<tr><td>' + files[i].name + '</td></tr>'
-				list[i] = files[i].name.substring(0,5);
+				fileNames.push(files[i].name);
+				list.push(files[i].name.substring(0,5));
 			}
-			test(list);
-		   document.querySelector('#officeList').innerHTML = html;
+			console.log(list);
+			
+			test(list, fileNames);
 	   }
+	   
+	   function check_all(e) {
+			var checkboxs = document.querySelectorAll('input[name=mycheck]');
+			var isChecked = e.checked;
+			for ( var i = 0, length = checkboxs.length; i < length; i++ ) {
+				checkboxs[i].checked = isChecked;
+			}
+		}
+	   
+	   function openFileForm() {
+		   document.querySelector('#egovComFileUploader').click();
+	   }
+	   
+	   var count = 0;
+	   function deleterow(){
+		  var deleteTargets = document.querySelectorAll('input[name=mycheck]:checked');
+		  
+		  for(var i=0, length = deleteTargets.length; i<length; i++){
+			  var fileList = document.querySelector('#egovComFileUploader').files;
+			  fileList = fileList.slice(deleteTargets[i].getAttribute('data-index'), 1);
+			  document.querySelector('#egovComFileUploader').files = fileList;
+		   } 
+		  
+		  /*  var table = document.querySelector('#officeList > tbody');
+		   var deleteTargets = document.querySelectorAll('input[name=mycheck]:checked');
+
+		   for(var i=0, length = deleteTargets.length; i<length; i++){
+			
+			   table.deleteRow((parseInt(deleteTargets[i].getAttribute('data-index')) + 1) - (count++));
+			   
+		   } */
+	   }
+		
   </script>
 </body>
 </html>

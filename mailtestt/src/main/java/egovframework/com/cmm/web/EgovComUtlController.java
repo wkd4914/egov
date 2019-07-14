@@ -74,7 +74,7 @@ public class EgovComUtlController {
 	}
 
     /**
-	 * validato rule dynamic Javascript
+	 * `dato rule dynamic Javascript
 	 */
 	@RequestMapping("/validator.do")
 	public String validate(){

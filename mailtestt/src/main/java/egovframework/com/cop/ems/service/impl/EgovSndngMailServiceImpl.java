@@ -73,10 +73,12 @@ public class EgovSndngMailServiceImpl extends EgovAbstractServiceImpl implements
 
 				// 2015.05.08 주석수정 - 첨부파일 정보를 포함한 메일을 전송합니다 
 				egovMultiPartEmail.send(recptnPerson, subject, emailCn, attachment);
-			}
-			// 메일을 전송합니다
-			egovMultiPartEmail.send(recptnPerson, subject, emailCn);
+			}else{
 
+				// 메일을 전송합니다
+				egovMultiPartEmail.send(recptnPerson, subject, emailCn);
+
+			}
 			Throwable t = new Throwable();
 
 		} catch (MailParseException ex) {

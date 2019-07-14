@@ -91,12 +91,13 @@ public class EgovSndngMailRegistServiceImpl extends EgovAbstractServiceImpl impl
 				FileVO fileVO = new FileVO();
 				fileVO.setAtchFileId(vo.getAtchFileId());
 				fileVO.setFileSn("0");
-				FileVO fvo = fileService.selectFileInf(fileVO);
-
-				File uFile = new File(fvo.getFileStreCours(), fvo.getStreFileNm());
+//				FileVO fvo = fileService.selectFileInf(fileVO);
+//
+//				File uFile = new File(fvo.getFileStreCours(), fvo.getStreFileNm());
 
 				mailVO.setAtchFileId(vo.getAtchFileId());
-				mailVO.setFileStreCours(uFile.getPath());
+				mailVO.setFileStreCours(vo.getFileStreCours());
+//				mailVO.setFileStreCours(uFile.getPath()); 
 				mailVO.setOrignlFileNm(vo.getOrignlFileNm());
 			}
 

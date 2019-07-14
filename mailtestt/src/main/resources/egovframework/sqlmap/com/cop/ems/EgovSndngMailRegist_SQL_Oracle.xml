@@ -75,6 +75,6 @@
 
 	</select>
 
-	<!-- <select id="OfficeUserDAO.DeleteOfficeUserList" parameterClass="OfficeUserVO" 
-		<![CDATA[ Delete -->
+	<!-- <select id="OfficeUserDAO.DeleteOfficeUserList" parameterClass="java.util.List" resultClass="java.util.HashMap">
+	 Delete -->
 </sqlMap>
