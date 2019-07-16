@@ -100,6 +100,8 @@ public class EgovSndngMailRegistController {
 	@RequestMapping(value = "/cop/ems/insertSndngMail.do")
 	public String insertSndngMail(final MultipartHttpServletRequest multiRequest, @ModelAttribute("sndngMailVO") SndngMailVO sndngMailVO, ModelMap model, HttpServletRequest request)
 			throws Exception {
+		
+		
 
 		String link = "N";
 		if (sndngMailVO != null && sndngMailVO.getLink() != null && !sndngMailVO.getLink().equals("")) {
@@ -109,45 +111,51 @@ public class EgovSndngMailRegistController {
 		LoginVO user = (LoginVO) EgovUserDetailsHelper.getAuthenticatedUser();
 
 		
+		String _atchFileId = "";
+		String orignlFileList = "";
+		
+
+		if (sndngMailVO != null) {
+			sndngMailVO.setAtchFileId(_atchFileId);
+			sndngMailVO.setDsptchPerson(user.getId());
+			sndngMailVO.setOrignlFileNm(orignlFileList);
+		}
+		
 		List<MultipartFile> list = multiRequest.getFiles("file_1");
 		String storePathString = EgovProperties.getProperty("Globals.fileStorePath");
 		
 		for ( MultipartFile file : list ) {
+			FileVO fvo = new FileVO();
+			List<FileVO> _result = new ArrayList<FileVO>();
+			long a =System.currentTimeMillis();
 			SndngMailVO data = new SndngMailVO();
 			data.setSj(sndngMailVO.getSj());
 			data.setEmailCn(sndngMailVO.getEmailCn());
-				
-			data.setDsptchPerson("TEST2");
-			file.transferTo(new File(storePathString + System.currentTimeMillis() + file.getOriginalFilename()));
-			data.setRecptnPerson("TEST1");
-			data.setOrignlFileNm(file.getOriginalFilename());
+			fvo.setAtchFileId(a + file.getOriginalFilename());
+			fvo.setFileExtsn(".pdf");
+			fvo.setFileSn("0");
+			fvo.setFileStreCours(storePathString);
+			fvo.setStreFileNm(file.getOriginalFilename());
+			data.setDsptchPerson(user.getId());
+			
+			data.setRecptnPerson("wkd4914@naver.com");
+			data.setOrignlFileNm(a+file.getOriginalFilename());
 			data.setFileStreCours(storePathString + file.getOriginalFilename());
 			data.setAtchFileId(file.getOriginalFilename());
+			_result.add(fvo);
+			_atchFileId = fileMngService.insertFileInfs(_result);//파일이 생성되고나면 생성된 첨부파일 ID를 리턴한다.
+			data.setAtchFileId(_atchFileId);
+			
+			file.transferTo(new File(storePathString + a + file.getOriginalFilename()));
 			boolean result = sndngMailRegistService.insertSndngMail(data);
 		}
 		
+		/*
+		 * 
+		 * #atchFileId#, #fileSn#, #fileStreCours#, #streFileNm#, 
+			  #orignlFileNm#, #fileExtsn#, #fileMg#, #fileCn# )	
+		 */
 		
-//		List<FileVO> _result = new ArrayList<FileVO>();
-//		String _atchFileId = "";
-//		final Map<String, MultipartFile> files = multiRequest.getFileMap();
-//		if (!files.isEmpty()) {
-//			_result = fileUtil.parseFileInf(files, "MSG_", 0, "", "");
-//			_atchFileId = fileMngService.insertFileInfs(_result); //파일이 생성되고나면 생성된 첨부파일 ID를 리턴한다.
-//
-//		}
-//
-//		String orignlFileList = "";
-
-//		for (int i = 0; i < _result.size(); i++) {
-//			FileVO fileVO = _result.get(i);
-//			orignlFileList = fileVO.getOrignlFileNm();
-//		}
-//
-//		if (sndngMailVO != null) {
-//			sndngMailVO.setAtchFileId(_atchFileId);
-//			sndngMailVO.setDsptchPerson(user.getId());
-//			sndngMailVO.setOrignlFileNm(orignlFileList);
-//		}
 
 		// 발송메일을 등록한다.
 		boolean result = sndngMailRegistService.insertSndngMail(sndngMailVO);
