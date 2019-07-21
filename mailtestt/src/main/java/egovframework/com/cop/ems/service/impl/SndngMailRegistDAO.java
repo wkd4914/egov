@@ -1,9 +1,11 @@
 package egovframework.com.cop.ems.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.web.multipart.MultipartFile;
 
 import egovframework.com.cmm.service.impl.EgovComAbstractDAO;
 import egovframework.com.cop.ems.service.SndngMailVO;
@@ -56,6 +58,16 @@ public class SndngMailRegistDAO<haspMap> extends EgovComAbstractDAO {
 	 */
 	public SndngMailVO updateSndngMail(SndngMailVO vo) throws Exception {
 		return (SndngMailVO) insert("sndngMailRegistDAO.updateSndngMail", vo);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Map> selectOffieUser2(List<MultipartFile> list) throws Exception{
+		List<String> paramList = new ArrayList();
+		for ( MultipartFile file : list ) {
+			String b = file.getOriginalFilename().substring(0,5);
+			paramList.add(b);
+		}
+		return (List<Map>) list("sndngMailRegistDAO.SelectOfficeUserList", paramList);
 	}
 	
 	@SuppressWarnings("unchecked")

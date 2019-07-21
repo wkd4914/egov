@@ -50,7 +50,6 @@
 		     , stre_file_nm AS streFileNm
 		     , orignl_file_nm AS orignlFileNm
 		     , file_extsn AS fileExtsn
-		     , file_size AS fileMg
 		  FROM COMTNFILEDETAIL
 		 WHERE atch_file_id = #atchFileId#
 		]]>
@@ -67,10 +66,13 @@
 
 	<!-- 사원 정보 테이블 -->
 	<select id="sndngMailRegistDAO.SelectOfficeUserList" parameterClass="java.util.List" resultClass="java.util.HashMap">
-		SELECT  * from office_user_id
+		SELECT  OID
+				,ONAME
+				,OMAIL from office_user_id
 		<iterate prepend="WHERE oid IN" open="(" close=")" conjunction="," >
 			 #[]#
 		</iterate>	
+		order by OID
                 
 
 	</select>

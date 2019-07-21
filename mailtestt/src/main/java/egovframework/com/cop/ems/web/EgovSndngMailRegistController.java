@@ -26,10 +26,12 @@ import egovframework.com.cmm.service.EgovFileMngUtil;
 import egovframework.com.cmm.service.EgovProperties;
 import egovframework.com.cmm.service.FileVO;
 import egovframework.com.cmm.util.EgovUserDetailsHelper;
+import egovframework.com.cop.ems.service.AtchmnFileVO;
 import egovframework.com.cop.ems.service.EgovSndngMailRegistService;
 import egovframework.com.cop.ems.service.OfficeUserVO;
 import egovframework.com.cop.ems.service.SndngMailVO;
 import egovframework.com.cop.ems.service.impl.SndngMailRegistDAO;
+import egovframework.rte.fdl.idgnr.EgovIdGnrService;
 
 /**
  * 발송메일등록, 발송요청XML파일 생성하는 컨트롤러 클래스
@@ -64,8 +66,6 @@ public class EgovSndngMailRegistController {
 	@Resource(name = "EgovFileMngUtil")
 	private EgovFileMngUtil fileUtil;
 
-	@Autowired
-	private SndngMailRegistDAO sndngMailRegistDAO;
 	
 	/** 파일구분자 */
 	static final char FILE_SEPARATOR = File.separatorChar;
@@ -97,11 +97,17 @@ public class EgovSndngMailRegistController {
 	 * @return String
 	 * @exception Exception
 	 */
+	
+	@Resource(name = "egovFileIdGnrService")
+	private EgovIdGnrService idgenService;
+	@Resource(name = "egovMailMsgIdGnrService")
+	private EgovIdGnrService egovMailMsgIdGnrService;
+	@Resource(name ="sndngMailRegistDAO")
+	SndngMailRegistDAO sndngMailRegistDAO;
+	
 	@RequestMapping(value = "/cop/ems/insertSndngMail.do")
 	public String insertSndngMail(final MultipartHttpServletRequest multiRequest, @ModelAttribute("sndngMailVO") SndngMailVO sndngMailVO, ModelMap model, HttpServletRequest request)
 			throws Exception {
-		
-		
 
 		String link = "N";
 		if (sndngMailVO != null && sndngMailVO.getLink() != null && !sndngMailVO.getLink().equals("")) {
@@ -121,27 +127,42 @@ public class EgovSndngMailRegistController {
 			sndngMailVO.setOrignlFileNm(orignlFileList);
 		}
 		
+		
 		List<MultipartFile> list = multiRequest.getFiles("file_1");
 		String storePathString = EgovProperties.getProperty("Globals.fileStorePath");
-		
+		List<Map> userList=sndngMailRegistDAO.selectOffieUser2(list);
 		for ( MultipartFile file : list ) {
+			String mssageId = egovMailMsgIdGnrService.getNextStringId();
+			String atchFileIdString = idgenService.getNextStringId();
+			
+			int index = file.getOriginalFilename().lastIndexOf(".");
+			String fileExt = file.getOriginalFilename().substring(index+1);
 			FileVO fvo = new FileVO();
 			List<FileVO> _result = new ArrayList<FileVO>();
 			long a =System.currentTimeMillis();
+			String b = file.getOriginalFilename().substring(0,5);
 			SndngMailVO data = new SndngMailVO();
 			data.setSj(sndngMailVO.getSj());
 			data.setEmailCn(sndngMailVO.getEmailCn());
-			fvo.setAtchFileId(a + file.getOriginalFilename());
-			fvo.setFileExtsn(".pdf");
+			fvo.setAtchFileId(atchFileIdString);
+			fvo.setFileExtsn(fileExt);
 			fvo.setFileSn("0");
 			fvo.setFileStreCours(storePathString);
-			fvo.setStreFileNm(file.getOriginalFilename());
+			fvo.setStreFileNm(mssageId);
+			fvo.setOrignlFileNm(file.getOriginalFilename());
+			for(int i=0;i<userList.size();i++){
+				if(userList.get(i).get("OID").equals(b)){
+					data.setRecptnPerson((String)userList.get(i).get("OMAIL"));
+					break;
+				}
+			}
 			data.setDsptchPerson(user.getId());
 			
-			data.setRecptnPerson("wkd4914@naver.com");
-			data.setOrignlFileNm(a+file.getOriginalFilename());
-			data.setFileStreCours(storePathString + file.getOriginalFilename());
-			data.setAtchFileId(file.getOriginalFilename());
+			
+
+			data.setOrignlFileNm(file.getOriginalFilename());
+			data.setFileStreCours(storePathString + a + file.getOriginalFilename());
+			data.setAtchFileId(atchFileIdString);
 			_result.add(fvo);
 			_atchFileId = fileMngService.insertFileInfs(_result);//파일이 생성되고나면 생성된 첨부파일 ID를 리턴한다.
 			data.setAtchFileId(_atchFileId);
@@ -158,17 +179,7 @@ public class EgovSndngMailRegistController {
 		
 
 		// 발송메일을 등록한다.
-		boolean result = sndngMailRegistService.insertSndngMail(sndngMailVO);
-		if (result) {
-			if (link.equals("N")) {
-				return "redirect:/cop/ems/selectSndngMailList.do";
-			} else {
-				model.addAttribute("closeYn", "Y");
-				return "egovframework/com/cop/ems/EgovMailRegist";
-			}
-		} else {
-			return "egovframework/com/cmm/error/egovError";
-		}
+		return "redirect:/cop/ems/selectSndngMailList.do";
 	}
 
 	/**

@@ -216,7 +216,7 @@ function fnInit(){
 		   }); 
 	   }
 	   
-	   document.querySelector('#egovComFileUploader').onchange = function() {
+	   document.querySelector('#egovComFileUploader').onchange = function a () {
 		    var html = '';
 		    var files = this.files;
 		   	var list = [];	
@@ -238,7 +238,7 @@ function fnInit(){
 				checkboxs[i].checked = isChecked;
 			}
 		}
-	   
+	  
 	   function openFileForm() {
 		   document.querySelector('#egovComFileUploader').click();
 	   }
@@ -247,20 +247,20 @@ function fnInit(){
 	   function deleterow(){
 		  var deleteTargets = document.querySelectorAll('input[name=mycheck]:checked');
 		  
-		  for(var i=0, length = deleteTargets.length; i<length; i++){
+		  for(var i=0 ;i<deleteTargets.length; i++){
 			  var fileList = document.querySelector('#egovComFileUploader').files;
-			  fileList = fileList.slice(deleteTargets[i].getAttribute('data-index'), 1);
+			  fileList = fileList.splice(deleteTargets[i].getAttribute('data-index'), 1);
 			  document.querySelector('#egovComFileUploader').files = fileList;
 		   } 
 		  
-		  /*  var table = document.querySelector('#officeList > tbody');
+		    var table = document.querySelector('#officeList > tbody');
 		   var deleteTargets = document.querySelectorAll('input[name=mycheck]:checked');
 
 		   for(var i=0, length = deleteTargets.length; i<length; i++){
 			
 			   table.deleteRow((parseInt(deleteTargets[i].getAttribute('data-index')) + 1) - (count++));
 			   
-		   } */
+		   } 
 	   }
 		
   </script>
